@@ -53,7 +53,8 @@ body{
 .app{max-width:520px;margin:0 auto;min-height:100vh;background:var(--surface-2);}
 header.top{
   position:sticky; top:0; z-index:20; background:var(--surface-2);
-  padding:16px 16px 8px; border-bottom:1px solid var(--border);
+  padding:calc(16px + env(safe-area-inset-top, 0px)) 16px 8px;
+  border-bottom:1px solid var(--border);
 }
 .top-row{display:flex;align-items:center;justify-content:space-between;gap:8px;}
 .brand{display:flex;align-items:center;gap:10px;}
