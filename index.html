@@ -85,13 +85,20 @@ h2.section-title:first-child{margin-top:2px;}
 }
 .hero-balance .label{font-size:12px;opacity:.75;letter-spacing:.02em;text-transform:uppercase;}
 .hero-balance .amount{font-size:32px;font-weight:800;margin:6px 0 2px;letter-spacing:-0.02em;}
-.hero-balance .chip{
+.chip{
   display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
-  padding:4px 10px;border-radius:999px;margin-top:8px;
+  padding:4px 10px;border-radius:999px;
 }
+.hero-balance .chip{margin-top:8px;}
 .chip.good{background:rgba(12,163,12,.18);color:#7be07b;}
 .chip.warning{background:rgba(250,178,25,.20);color:#ffd166;}
 .chip.critical{background:rgba(208,59,59,.20);color:#ff9a9a;}
+.btn-pagar{
+  border:none;background:var(--s1,#2d7dfb);color:#fff;font-size:12px;font-weight:700;
+  padding:7px 14px;border-radius:999px;cursor:pointer;
+}
+.btn-pagar:disabled{opacity:.6;}
+.btn-pagar .spinner{width:12px;height:12px;}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
 
@@ -306,18 +313,18 @@ details.setup li{margin-bottom:4px;}
 
       <div id="viewMensual">
         <div class="hero-balance">
-          <div class="label">Balance del mes</div>
+          <div class="label">Efectivo disponible</div>
           <div class="amount" id="heroBalance">$0</div>
           <span class="chip good" id="heroChip">Al día</span>
         </div>
 
         <div class="stat-grid">
+          <div class="stat-tile"><div class="k">Balance del mes</div><div class="v" id="statBalanceMes">$0</div></div>
           <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
           <div class="stat-tile"><div class="k">Gastos del mes</div><div class="v neg" id="statGastos">$0</div></div>
-          <div class="stat-tile"><div class="k">Gastos fijos</div><div class="v" id="statFijos">$0</div></div>
+          <div class="stat-tile"><div class="k">Fijos pendientes</div><div class="v" id="statFijos">$0</div></div>
           <div class="stat-tile"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
           <div class="stat-tile"><div class="k">Saldo tarjetas</div><div class="v neg" id="statTarjetas">$0</div></div>
-          <div class="stat-tile"><div class="k">Ahorro acumulado</div><div class="v pos" id="statAhorroAcum">$0</div></div>
         </div>
       </div>
 
@@ -803,21 +810,23 @@ details.setup li{margin-bottom:4px;}
 
   function renderResumen(d){
     var r = d.resumen;
-    document.getElementById('heroBalance').textContent = fmtCOP(r.balanceMes);
+    document.getElementById('heroBalance').textContent = fmtCOP(r.efectivoDisponible);
     var chip = document.getElementById('heroChip');
-    if(r.balanceMes >= 0){
-      chip.className = 'chip good'; chip.textContent = '✔ Vas bien este mes';
-    } else if (r.balanceMes > -500000){
-      chip.className = 'chip warning'; chip.textContent = '⚠ Cuidado, estás en negativo';
+    if(r.efectivoDisponible >= 0){
+      chip.className = 'chip good'; chip.textContent = '✔ Tienes efectivo disponible';
+    } else if (r.efectivoDisponible > -500000){
+      chip.className = 'chip warning'; chip.textContent = '⚠ Efectivo ajustado';
     } else {
-      chip.className = 'chip critical'; chip.textContent = '⛔ En números rojos';
+      chip.className = 'chip critical'; chip.textContent = '⛔ Sin efectivo disponible';
     }
+    var balTile = document.getElementById('statBalanceMes');
+    balTile.textContent = fmtCOP(r.balanceMes);
+    balTile.className = 'v ' + (r.balanceMes >= 0 ? 'pos' : 'neg');
     document.getElementById('statIngresos').textContent = fmtCOP(r.totalIngresosMes);
     document.getElementById('statGastos').textContent = fmtCOP(r.totalGastosMes);
-    document.getElementById('statFijos').textContent = fmtCOP(r.totalGastosFijosMes);
+    document.getElementById('statFijos').textContent = fmtCOP(r.totalGastosFijosPendientesMes);
     document.getElementById('statAhorro').textContent = fmtCOP(r.totalAportesAhorroMes);
     document.getElementById('statTarjetas').textContent = fmtCOP(r.saldoTotalTarjetas);
-    document.getElementById('statAhorroAcum').textContent = fmtCOP(r.ahorroTotalAcumulado);
   }
 
   function renderQuincenaCard(prefix, q){
@@ -1047,13 +1056,50 @@ details.setup li{margin-bottom:4px;}
     var el = document.getElementById('listaFijos');
     var rows = (d.gastosFijos||[]);
     if(rows.length === 0){ el.innerHTML = '<div class="empty-state">Sin gastos fijos aún</div>'; return; }
-    el.innerHTML = rows.map(function(r){
+    el.innerHTML = rows.map(function(r, i){
+      var pagado = !!r.pagadoEsteMes;
+      var estadoChip = pagado
+        ? '<span class="chip good">✔ Pagado este mes</span>'
+        : '<span class="chip warning">⏳ Pendiente de pago</span>';
+      var accionBtn = pagado
+        ? ''
+        : '<button type="button" class="btn-pagar" data-fijo-idx="'+i+'">Ya lo pagué</button>';
       return '<div class="fixed-card"><div class="row1">'+
         '<div><div class="name">'+esc(r.nombre)+'</div><div class="cat">'+esc(r.categoria)+'</div></div>'+
         '<div class="monto">'+fmtCOP(r.montoMensual)+'</div></div>'+
         '<div class="row2"><span class="small-muted">Día de pago: '+r.diaPago+' · '+r.proximaFecha+'</span>'+countdownChipHtml(r.diasRestantes)+'</div>'+
+        '<div class="row2" style="margin-top:8px; align-items:center;">'+estadoChip+accionBtn+'</div>'+
         '</div>';
     }).join('');
+
+    el.querySelectorAll('.btn-pagar').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        var idx = Number(btn.dataset.fijoIdx);
+        var g = (state.data.gastosFijos||[])[idx];
+        if(!g) return;
+        btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>';
+        apiPost('addGasto', {
+          fecha: new Date().toISOString().slice(0,10),
+          categoria: g.categoria,
+          descripcion: g.nombre,
+          monto: g.montoMensual,
+          medioPago: 'Débito',
+          notas: 'Pago de gasto fijo confirmado desde el dashboard'
+        }).then(function(res){
+          if(res && res.ok){
+            state.data = res.data;
+            renderAll();
+            showToast('Marcado como pagado ✔');
+          } else {
+            btn.disabled = false; btn.textContent = 'Ya lo pagué';
+            showToast((res && res.error) || 'No se pudo registrar el pago');
+          }
+        }).catch(function(err){
+          btn.disabled = false; btn.textContent = 'Ya lo pagué';
+          showToast('Error: ' + err.message);
+        });
+      });
+    });
   }
 
   function renderListaTarjetas(d){
