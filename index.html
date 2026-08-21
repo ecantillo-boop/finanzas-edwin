@@ -94,6 +94,27 @@ h2.section-title:first-child{margin-top:2px;}
 .chip.critical{background:rgba(208,59,59,.20);color:#ff9a9a;}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
+
+.view-toggle{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:14px;}
+.view-toggle-btn{flex:1;border:none;background:transparent;padding:9px 6px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--text-muted);cursor:pointer;}
+.view-toggle-btn.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.12);}
+
+.quincena-card{
+  border:1px solid var(--border); border-radius:18px; padding:16px; margin-bottom:12px;
+  background:var(--surface-card);
+}
+.quincena-card.actual{ border-color:var(--s1); }
+.quincena-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;}
+.quincena-header .titulo{font-size:13px;font-weight:700;color:var(--text-secondary);}
+.badge-actual{
+  font-size:10px;font-weight:800;letter-spacing:.03em;color:var(--s1);
+  background:rgba(42,120,214,.14);padding:3px 8px;border-radius:999px;white-space:nowrap;
+}
+.quincena-balance{font-size:23px;font-weight:800;margin:2px 0 8px;font-variant-numeric:tabular-nums;}
+.quincena-mini-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
+.quincena-mini-stats .mini{background:var(--surface-2);border-radius:10px;padding:8px 6px;text-align:center;}
+.quincena-mini-stats .mini .k{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
+.quincena-mini-stats .mini .v{font-size:12px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
 .stat-tile{background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:12px;}
 .stat-tile .k{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
 .stat-tile .v{font-size:17px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;}
@@ -277,19 +298,56 @@ details.setup li{margin-bottom:4px;}
 
     <!-- RESUMEN -->
     <section class="section active" id="tab-resumen">
-      <div class="hero-balance">
-        <div class="label">Balance del mes</div>
-        <div class="amount" id="heroBalance">$0</div>
-        <span class="chip good" id="heroChip">Al día</span>
+
+      <div class="view-toggle">
+        <button class="view-toggle-btn active" data-view="mensual">Mensual</button>
+        <button class="view-toggle-btn" data-view="quincenal">Quincenal</button>
       </div>
 
-      <div class="stat-grid">
-        <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
-        <div class="stat-tile"><div class="k">Gastos del mes</div><div class="v neg" id="statGastos">$0</div></div>
-        <div class="stat-tile"><div class="k">Gastos fijos</div><div class="v" id="statFijos">$0</div></div>
-        <div class="stat-tile"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
-        <div class="stat-tile"><div class="k">Saldo tarjetas</div><div class="v neg" id="statTarjetas">$0</div></div>
-        <div class="stat-tile"><div class="k">Ahorro acumulado</div><div class="v pos" id="statAhorroAcum">$0</div></div>
+      <div id="viewMensual">
+        <div class="hero-balance">
+          <div class="label">Balance del mes</div>
+          <div class="amount" id="heroBalance">$0</div>
+          <span class="chip good" id="heroChip">Al día</span>
+        </div>
+
+        <div class="stat-grid">
+          <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
+          <div class="stat-tile"><div class="k">Gastos del mes</div><div class="v neg" id="statGastos">$0</div></div>
+          <div class="stat-tile"><div class="k">Gastos fijos</div><div class="v" id="statFijos">$0</div></div>
+          <div class="stat-tile"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
+          <div class="stat-tile"><div class="k">Saldo tarjetas</div><div class="v neg" id="statTarjetas">$0</div></div>
+          <div class="stat-tile"><div class="k">Ahorro acumulado</div><div class="v pos" id="statAhorroAcum">$0</div></div>
+        </div>
+      </div>
+
+      <div id="viewQuincenal" style="display:none;">
+        <div class="quincena-card" id="q1Card">
+          <div class="quincena-header">
+            <div class="titulo" id="q1Titulo">Quincena 1 · día 1 al 15</div>
+            <span class="badge-actual" id="q1Badge" style="display:none;">EN CURSO</span>
+          </div>
+          <div class="quincena-balance" id="q1Balance">$0</div>
+          <span class="chip good" id="q1Chip">Alcanza</span>
+          <div class="quincena-mini-stats">
+            <div class="mini"><div class="k">Ingresos</div><div class="v" id="q1Ingresos">$0</div></div>
+            <div class="mini"><div class="k">Gastos</div><div class="v" id="q1Gastos">$0</div></div>
+            <div class="mini"><div class="k">Fijos</div><div class="v" id="q1Fijos">$0</div></div>
+          </div>
+        </div>
+        <div class="quincena-card" id="q2Card">
+          <div class="quincena-header">
+            <div class="titulo" id="q2Titulo">Quincena 2 · día 16 al 30</div>
+            <span class="badge-actual" id="q2Badge" style="display:none;">EN CURSO</span>
+          </div>
+          <div class="quincena-balance" id="q2Balance">$0</div>
+          <span class="chip good" id="q2Chip">Alcanza</span>
+          <div class="quincena-mini-stats">
+            <div class="mini"><div class="k">Ingresos</div><div class="v" id="q2Ingresos">$0</div></div>
+            <div class="mini"><div class="k">Gastos</div><div class="v" id="q2Gastos">$0</div></div>
+            <div class="mini"><div class="k">Fijos</div><div class="v" id="q2Fijos">$0</div></div>
+          </div>
+        </div>
       </div>
 
       <h2 class="section-title">Ingresos vs. gastos (6 meses)</h2>
@@ -729,6 +787,7 @@ details.setup li{margin-bottom:4px;}
     if(!state.data) return;
     var d = state.data;
     safe(renderResumen, 'resumen')(d);
+    safe(renderResumenQuincenal, 'resumen quincenal')(d);
     safe(renderChartMeses, 'chart meses')(d);
     safe(renderChartCategorias, 'chart categorias')(d);
     safe(renderVencimientos, 'vencimientos')(d);
@@ -760,6 +819,51 @@ details.setup li{margin-bottom:4px;}
     document.getElementById('statTarjetas').textContent = fmtCOP(r.saldoTotalTarjetas);
     document.getElementById('statAhorroAcum').textContent = fmtCOP(r.ahorroTotalAcumulado);
   }
+
+  function renderQuincenaCard(prefix, q){
+    if(!q) return;
+    document.getElementById(prefix+'Titulo').textContent = 'Quincena '+q.numero+' · día '+q.inicioDia+' al '+q.finDia;
+    document.getElementById(prefix+'Badge').style.display = q.esActual ? 'inline-block' : 'none';
+    document.getElementById(prefix+'Card').classList.toggle('actual', !!q.esActual);
+    document.getElementById(prefix+'Balance').textContent = fmtCOP(q.balance);
+    var chip = document.getElementById(prefix+'Chip');
+    if(q.balance >= 0){
+      chip.className = 'chip good'; chip.textContent = '✔ Alcanza';
+    } else if(q.balance > -300000){
+      chip.className = 'chip warning'; chip.textContent = '⚠ Ajustado';
+    } else {
+      chip.className = 'chip critical'; chip.textContent = '⛔ No alcanza';
+    }
+    document.getElementById(prefix+'Ingresos').textContent = fmtCOP(q.ingresos);
+    document.getElementById(prefix+'Gastos').textContent = fmtCOP(q.gastos);
+    document.getElementById(prefix+'Fijos').textContent = fmtCOP(q.gastosFijos);
+  }
+
+  function renderResumenQuincenal(d){
+    var rq = d.resumenQuincenal;
+    if(!rq) return;
+    renderQuincenaCard('q1', rq.quincena1);
+    renderQuincenaCard('q2', rq.quincena2);
+  }
+
+  var VISTA_KEY = "finanzasFithub_vista";
+  function setVista(v){
+    if(v !== 'quincenal') v = 'mensual';
+    document.getElementById('viewMensual').style.display = v === 'mensual' ? 'block' : 'none';
+    document.getElementById('viewQuincenal').style.display = v === 'quincenal' ? 'block' : 'none';
+    document.querySelectorAll('.view-toggle-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.view === v);
+    });
+    try{ localStorage.setItem(VISTA_KEY, v); }catch(e){}
+  }
+  document.querySelectorAll('.view-toggle-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){ setVista(btn.dataset.view); });
+  });
+  (function initVista(){
+    var saved = 'mensual';
+    try{ saved = localStorage.getItem(VISTA_KEY) || 'mensual'; }catch(e){}
+    setVista(saved);
+  })();
 
   function styleAxis(scale){
     return {
