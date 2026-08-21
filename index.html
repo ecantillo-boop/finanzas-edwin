@@ -330,7 +330,7 @@ details.setup li{margin-bottom:4px;}
           <div class="quincena-balance" id="q1Balance">$0</div>
           <span class="chip good" id="q1Chip">Alcanza</span>
           <div class="quincena-mini-stats">
-            <div class="mini"><div class="k">Ingresos</div><div class="v" id="q1Ingresos">$0</div></div>
+            <div class="mini"><div class="k" id="q1IngresosLabel">Ingresos</div><div class="v" id="q1Ingresos">$0</div></div>
             <div class="mini"><div class="k">Gastos</div><div class="v" id="q1Gastos">$0</div></div>
             <div class="mini"><div class="k">Fijos</div><div class="v" id="q1Fijos">$0</div></div>
           </div>
@@ -343,7 +343,7 @@ details.setup li{margin-bottom:4px;}
           <div class="quincena-balance" id="q2Balance">$0</div>
           <span class="chip good" id="q2Chip">Alcanza</span>
           <div class="quincena-mini-stats">
-            <div class="mini"><div class="k">Ingresos</div><div class="v" id="q2Ingresos">$0</div></div>
+            <div class="mini"><div class="k" id="q2IngresosLabel">Ingresos</div><div class="v" id="q2Ingresos">$0</div></div>
             <div class="mini"><div class="k">Gastos</div><div class="v" id="q2Gastos">$0</div></div>
             <div class="mini"><div class="k">Fijos</div><div class="v" id="q2Fijos">$0</div></div>
           </div>
@@ -822,7 +822,9 @@ details.setup li{margin-bottom:4px;}
 
   function renderQuincenaCard(prefix, q){
     if(!q) return;
-    document.getElementById(prefix+'Titulo').textContent = 'Quincena '+q.numero+' · día '+q.inicioDia+' al '+q.finDia;
+    document.getElementById(prefix+'Titulo').textContent = 'Quincena '+q.numero+' · gastos día '+q.inicioDia+' al '+q.finDia;
+    var labelEl = document.getElementById(prefix+'IngresosLabel');
+    if(labelEl) labelEl.textContent = q.notaIngreso || 'Ingresos';
     document.getElementById(prefix+'Badge').style.display = q.esActual ? 'inline-block' : 'none';
     document.getElementById(prefix+'Card').classList.toggle('actual', !!q.esActual);
     document.getElementById(prefix+'Balance').textContent = fmtCOP(q.balance);
