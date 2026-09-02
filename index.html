@@ -589,6 +589,18 @@ details.setup li{margin-bottom:4px;}
   }
   function fmtNum(n){ return new Intl.NumberFormat('es-CO').format(n); }
 
+  // Fecha de HOY en formato YYYY-MM-DD usando la hora LOCAL del celular.
+  // OJO: Date#toISOString() siempre convierte a UTC, así que en Colombia
+  // (UTC-5) usarlo de noche (después de las 7pm aprox.) devuelve la fecha
+  // de MAÑANA en vez de la de hoy. Esta función arma el string a mano con
+  // getFullYear/getMonth/getDate (que sí son locales) para evitar ese salto.
+  function todayLocalISO(){
+    var d = new Date();
+    var m = String(d.getMonth() + 1).padStart(2, '0');
+    var day = String(d.getDate()).padStart(2, '0');
+    return d.getFullYear() + '-' + m + '-' + day;
+  }
+
   function showToast(msg){
     var t = document.getElementById('toast');
     t.textContent = msg;
@@ -721,7 +733,7 @@ details.setup li{margin-bottom:4px;}
       btn.textContent = visible ? btn.textContent : '✖️ Cerrar formulario';
       if(!visible){
         var dateInput = form.querySelector('input[type="date"]');
-        if(dateInput && !dateInput.value) dateInput.value = new Date().toISOString().slice(0,10);
+        if(dateInput && !dateInput.value) dateInput.value = todayLocalISO();
       } else {
         restoreToggleLabel(btn);
       }
@@ -1145,7 +1157,7 @@ details.setup li{margin-bottom:4px;}
           nombre: g.nombre,
           categoria: g.categoria,
           corteFecha: g.corteVigente || g.proximaFecha,
-          fecha: new Date().toISOString().slice(0,10),
+          fecha: todayLocalISO(),
           monto: monto,
           medioPago: 'Débito',
           crearGasto: !yaRegistrado,
