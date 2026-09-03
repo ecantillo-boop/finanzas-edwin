@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
 <meta name="theme-color" content="#0b0b0b" />
-<title>Finanzas Fithub</title>
+<title>Finanzas Personales Edwin</title>
 
 <!-- Icono y modo "app" al agregar a la pantalla de inicio (iPhone/Android) -->
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
@@ -318,7 +318,7 @@ details.setup li{margin-bottom:4px;}
   <div class="gate-card">
     <button class="icon-btn gate-theme-btn" id="btnThemeGate" title="Cambiar tema">🌓</button>
     <div class="logo">💰</div>
-    <h2 id="gateTitle">Finanzas Fithub</h2>
+    <h2 id="gateTitle">Finanzas Personales Edwin</h2>
     <p class="hint">Ingresa tu PIN para ver el dashboard</p>
     <div class="field">
       <label>PIN</label>
@@ -334,7 +334,7 @@ details.setup li{margin-bottom:4px;}
         <input id="scriptUrlInput" type="url" placeholder="https://script.google.com/macros/s/XXXXX/exec" />
       </div>
       <ol>
-        <li>Abre tu Google Sheet "Finanzas Fithub".</li>
+        <li>Abre tu Google Sheet "Finanzas Personales Edwin".</li>
         <li>Ve a Extensiones → Apps Script y pega el código Code.gs.</li>
         <li>Despliega como Aplicación web (acceso: Cualquier usuario) y copia el enlace /exec.</li>
         <li>Pégalo aquí arriba y presiona Entrar con tu PIN.</li>
@@ -349,7 +349,7 @@ details.setup li{margin-bottom:4px;}
       <div class="brand">
         <div class="logo">💰</div>
         <div>
-          <h1 id="familyName">Finanzas Fithub</h1>
+          <h1 id="familyName">Finanzas Personales Edwin</h1>
           <div class="sub" id="todayLabel">—</div>
         </div>
       </div>
@@ -722,7 +722,7 @@ details.setup li{margin-bottom:4px;}
     gate.style.display = 'none';
     appEl.style.display = 'block';
     tabbar.style.display = 'flex';
-    document.getElementById('familyName').textContent = (state.data.config && state.data.config.nombreFamilia) || 'Finanzas Fithub';
+    document.getElementById('familyName').textContent = (state.data.config && state.data.config.nombreFamilia) || 'Finanzas Personales Edwin';
     document.getElementById('todayLabel').textContent = new Intl.DateTimeFormat('es-CO', { weekday:'long', day:'numeric', month:'long' }).format(new Date());
     populateCategorySelects();
     renderAll();
