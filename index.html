@@ -83,8 +83,15 @@ main{padding:14px 16px 24px;}
 h2.section-title{font-size:15px;font-weight:700;margin:22px 0 10px;color:var(--text-primary);}
 h2.section-title:first-child{margin-top:2px;}
 
+.card, .fixed-card, .card-item, .quincena-card, .stat-tile, .gate-card, .fijo-pay-form, .tip-card, .view-toggle{
+  background: color-mix(in srgb, var(--surface-card) 72%, transparent);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 35%, transparent), 0 6px 20px rgba(0,0,0,0.06);
+}
 .card{
-  background:var(--surface-card); border:1px solid var(--border); border-radius:16px;
+  border-radius:16px;
   padding:16px; margin-bottom:12px;
 }
 .hero-balance{
@@ -118,7 +125,6 @@ h2.section-title:first-child{margin-top:2px;}
 
 .fijo-pay-form{
   display:grid; gap:8px; margin-top:12px; padding:12px; border-radius:12px;
-  background:var(--surface-2); border:1px solid var(--border);
 }
 .fijo-pay-form label.small-muted{margin-bottom:-4px;}
 .fijo-pay-form .fijo-pay-amount{
@@ -138,13 +144,12 @@ h2.section-title:first-child{margin-top:2px;}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
 
-.view-toggle{display:flex;gap:4px;background:var(--surface-2);border:1px solid var(--border);border-radius:12px;padding:4px;margin-bottom:14px;}
+.view-toggle{display:flex;gap:4px;border-radius:12px;padding:4px;margin-bottom:14px;}
 .view-toggle-btn{flex:1;border:none;background:transparent;padding:9px 6px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--text-muted);cursor:pointer;}
 .view-toggle-btn.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.12);}
 
 .quincena-card{
-  border:1px solid var(--border); border-radius:18px; padding:16px; margin-bottom:12px;
-  background:var(--surface-card);
+  border-radius:18px; padding:16px; margin-bottom:12px;
 }
 .quincena-card.actual{ border-color:var(--s1); }
 .quincena-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;}
@@ -158,12 +163,14 @@ h2.section-title:first-child{margin-top:2px;}
 .quincena-mini-stats .mini{background:var(--surface-2);border-radius:10px;padding:8px 6px;text-align:center;}
 .quincena-mini-stats .mini .k{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
 .quincena-mini-stats .mini .v{font-size:12px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
-.stat-tile{background:var(--surface-card);border:1px solid var(--border);border-radius:14px;padding:12px;}
+.stat-tile{border-radius:14px;padding:12px;}
 .stat-tile .k{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
 .stat-tile .v{font-size:17px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;}
 .stat-tile .v.pos{color:var(--good);}
 .stat-tile .v.neg{color:var(--critical);}
 
+.chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:14px;}
+.badge-parcial{font-size:10.5px;font-weight:700;color:var(--text-muted);background:var(--surface-2);padding:4px 10px;border-radius:999px;white-space:nowrap;}
 .chart-wrap{position:relative;height:220px;margin-top:4px;}
 .chart-wrap.tall{height:260px;}
 
@@ -191,7 +198,7 @@ h2.section-title:first-child{margin-top:2px;}
 
 .tip-card{
   display:flex; align-items:flex-start; gap:10px; margin-top:12px; padding:14px;
-  border-radius:14px; background:var(--surface-2); border:1px solid var(--border);
+  border-radius:14px;
   font-size:12.5px; color:var(--text-secondary); font-style:italic; line-height:1.45;
 }
 .tip-card .tip-emoji{font-style:normal; font-size:16px; flex-shrink:0;}
@@ -208,7 +215,7 @@ h2.section-title:first-child{margin-top:2px;}
 :root[data-theme="dark"] .countdown-chip.soon, @media (prefers-color-scheme:dark){.countdown-chip.soon{color:var(--warning);}}
 
 .fixed-card, .card-item{
-  border:1px solid var(--border);border-radius:14px;padding:13px 14px;margin-bottom:10px;background:var(--surface-card);
+  border-radius:14px;padding:13px 14px;margin-bottom:10px;
 }
 .fixed-card .row1, .card-item .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
 .fixed-card .name, .card-item .name{font-size:14px;font-weight:700;}
@@ -275,7 +282,7 @@ nav.tabbar .tab.active{color:var(--s1);}
   display:flex;align-items:center;justify-content:center;padding:20px;
 }
 .gate-card{
-  width:100%;max-width:380px;background:var(--surface-card);border:1px solid var(--border);
+  width:100%;max-width:380px;
   border-radius:20px;padding:26px 22px;
 }
 .gate-card .logo{font-size:38px;text-align:center;margin-bottom:6px;}
@@ -411,7 +418,9 @@ details.setup li{margin-bottom:4px;}
       </div>
 
       <h2 class="section-title">Ingresos vs. gastos (6 meses)</h2>
-      <div class="card"><div class="chart-wrap"><canvas id="chartMeses"></canvas></div>
+      <div class="card">
+        <div class="chart-head"><span></span><span class="badge-parcial" id="badgeMesParcial"></span></div>
+        <div class="chart-wrap"><canvas id="chartMeses"></canvas></div>
         <div class="legend-row">
           <span><span class="legend-dot" style="background:var(--s1)"></span>Ingresos</span>
           <span><span class="legend-dot" style="background:var(--s2)"></span>Gastos</span>
@@ -970,20 +979,54 @@ details.setup li{margin-bottom:4px;}
     if(chartLibMissing('chartMeses')) return;
     destroyChart('meses');
     var series = d.ingresosVsGastosPorMes || [];
+    var lastIdx = series.length - 1; // el mes en curso, todavia incompleto
+    var badge = document.getElementById('badgeMesParcial');
+    if(badge) badge.textContent = series.length ? (series[lastIdx].mes + ' parcial') : '';
+
+    function gradientFor(ctx, hex){
+      var area = ctx.chart.chartArea;
+      var g = ctx.chart.ctx.createLinearGradient(0, area ? area.top : 0, 0, area ? area.bottom : 220);
+      g.addColorStop(0, hexToRgba(hex, 0.30));
+      g.addColorStop(1, hexToRgba(hex, 0));
+      return g;
+    }
+    function dashedLastSegment(ctx){
+      return ctx.p1DataIndex === lastIdx ? [5,4] : undefined;
+    }
+    function buildDataset(label, data, hex){
+      return {
+        label:label, data:data, borderColor:hex, backgroundColor:function(ctx){ return gradientFor(ctx, hex); },
+        fill:true, tension:0.4, borderWidth:2.5, borderCapStyle:'round',
+        pointRadius:0, pointHoverRadius:5, pointHoverBackgroundColor:hex,
+        pointHoverBorderColor:getVar('--surface-card'), pointHoverBorderWidth:2,
+        segment:{ borderDash: dashedLastSegment }
+      };
+    }
+
     var ctx = document.getElementById('chartMeses').getContext('2d');
     charts.meses = new Chart(ctx, {
-      type: 'bar',
+      type: 'line',
       data: {
         labels: series.map(function(s){ return s.mes; }),
         datasets: [
-          { label:'Ingresos', data: series.map(function(s){ return s.ingresos; }), backgroundColor: getVar('--s1'), borderRadius:4, maxBarThickness:16 },
-          { label:'Gastos', data: series.map(function(s){ return s.gastos; }), backgroundColor: getVar('--s2'), borderRadius:4, maxBarThickness:16 }
+          buildDataset('Ingresos', series.map(function(s){ return s.ingresos; }), getVar('--s1')),
+          buildDataset('Gastos', series.map(function(s){ return s.gastos; }), getVar('--s2'))
         ]
       },
       options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false }, tooltip:{ callbacks:{ label:function(ctx){ return ctx.dataset.label+': '+fmtCOP(ctx.raw); } } } },
-        scales:{ x: styleAxis(), y: Object.assign(styleAxis(), { ticks:{ color:getVar('--text-muted'), font:{size:10.5}, callback:function(v){ return fmtNum(v/1000)+'k'; } } }) }
+        responsive:true, maintainAspectRatio:false, interaction:{ mode:'index', intersect:false },
+        plugins:{
+          legend:{ display:false },
+          tooltip:{
+            backgroundColor:'rgba(20,20,20,0.92)', titleColor:'#fff', bodyColor:'rgba(255,255,255,0.85)',
+            borderWidth:0, padding:10, cornerRadius:10, displayColors:true, boxPadding:4, usePointStyle:true,
+            callbacks:{ label:function(ctx){ return ctx.dataset.label+': '+fmtCOP(ctx.raw); } }
+          }
+        },
+        scales:{
+          x:{ grid:{ display:false }, border:{ display:false }, ticks:{ color:getVar('--text-muted'), font:{size:10.5} } },
+          y:{ grid:{ display:false }, border:{ display:false }, ticks:{ color:getVar('--text-muted'), font:{size:10.5}, maxTicksLimit:5, callback:function(v){ return fmtNum(v/1000)+'k'; } } }
+        }
       }
     });
   }
