@@ -24,6 +24,7 @@
   --grid:#e1e0d9; --baseline:#c3c2b7; --border:rgba(11,11,11,0.10);
   --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#4a3aa7; --s8:#e34948;
   --good:#0ca30c; --warning:#fab219; --serious:#ec835a; --critical:#d03b3b;
+  --gradient-warm: linear-gradient(135deg, var(--s4), var(--s2));
 }
 @media (prefers-color-scheme: dark){
   :root:where(:not([data-theme="light"])){
@@ -94,7 +95,7 @@ h2.section-title:first-child{margin-top:2px;}
 .chip.warning{background:rgba(250,178,25,.20);color:#ffd166;}
 .chip.critical{background:rgba(208,59,59,.20);color:#ff9a9a;}
 .btn-pagar{
-  border:none;background:var(--s1,#2d7dfb);color:#fff;font-size:12px;font-weight:700;
+  border:none;background:var(--gradient-warm);color:#fff;font-size:12px;font-weight:700;
   padding:7px 14px;border-radius:999px;cursor:pointer;
 }
 .btn-pagar:disabled{opacity:.6;}
@@ -117,7 +118,7 @@ h2.section-title:first-child{margin-top:2px;}
 .btn-pagar-confirm, .btn-pagar-cancel{
   border:none; font-size:12.5px; font-weight:700; padding:8px 14px; border-radius:999px; cursor:pointer;
 }
-.btn-pagar-confirm{background:var(--s1,#2d7dfb); color:#fff;}
+.btn-pagar-confirm{background:var(--gradient-warm); color:#fff;}
 .btn-pagar-cancel{background:transparent; color:var(--text-muted); border:1px solid var(--border);}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
@@ -156,7 +157,8 @@ h2.section-title:first-child{margin-top:2px;}
 }
 .list-row:last-child{border-bottom:none;}
 .list-row .ico{
-  width:36px;height:36px;border-radius:10px;background:var(--surface-2);
+  width:36px;height:36px;border-radius:10px;
+  background: color-mix(in srgb, var(--ico-accent, var(--text-muted)) 20%, var(--surface-2));
   display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;
 }
 .list-row .info{flex:1;min-width:0;}
@@ -165,6 +167,19 @@ h2.section-title:first-child{margin-top:2px;}
 .list-row .amt{font-size:14px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;}
 .amt.gasto{color:var(--critical);}
 .amt.ingreso{color:var(--good);}
+
+.tag-row{display:flex;gap:5px;margin-top:3px;flex-wrap:wrap;}
+.tag-pill{
+  font-size:10px;font-weight:600;padding:2px 8px;border-radius:999px;
+  background:var(--surface-2);color:var(--text-secondary);white-space:nowrap;
+}
+
+.tip-card{
+  display:flex; align-items:flex-start; gap:10px; margin-top:12px; padding:14px;
+  border-radius:14px; background:var(--surface-2); border:1px solid var(--border);
+  font-size:12.5px; color:var(--text-secondary); font-style:italic; line-height:1.45;
+}
+.tip-card .tip-emoji{font-style:normal; font-size:16px; flex-shrink:0;}
 
 .day-group-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;margin:14px 0 2px;}
 
@@ -201,7 +216,7 @@ form.quick-add{display:grid;gap:10px;}
 }
 .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 button.primary{
-  background:var(--text-primary);color:var(--surface-1);border:none;border-radius:12px;
+  background:var(--gradient-warm);color:#fff;border:none;border-radius:12px;
   padding:12px;font-size:14.5px;font-weight:700;cursor:pointer;
 }
 button.primary:active{transform:scale(0.98);}
@@ -390,6 +405,8 @@ details.setup li{margin-bottom:4px;}
 
       <h2 class="section-title">Próximos vencimientos</h2>
       <div class="card" id="proximosVencimientos"><div class="empty-state">Sin datos aún</div></div>
+
+      <div class="tip-card" id="tipCard"><span class="tip-emoji">💡</span><span id="tipText"></span></div>
     </section>
 
     <!-- GASTOS -->
@@ -830,6 +847,7 @@ details.setup li{margin-bottom:4px;}
     safe(renderChartMeses, 'chart meses')(d);
     safe(renderChartCategorias, 'chart categorias')(d);
     safe(renderVencimientos, 'vencimientos')(d);
+    safe(renderTip, 'tip del dia')(d);
     safe(renderChartGastosDia, 'chart gastos dia')(d);
     safe(renderListaGastos, 'lista gastos')(d);
     safe(renderListaIngresos, 'lista ingresos')(d);
@@ -1037,6 +1055,40 @@ details.setup li{margin-bottom:4px;}
     }).join('');
   }
 
+  var TIPS = [
+    'Solo con anotar cada gasto ya tiendes a gastar menos — el simple hecho de registrarlo te hace pensarlo dos veces.',
+    'La regla 50/30/20 es un punto de partida simple: 50% necesidades, 30% gustos, 20% ahorro o deudas.',
+    'Antes de una compra grande, espérate 24 horas. Si al día siguiente sigues queriéndola, probablemente valga la pena.',
+    'Automatiza tu ahorro: si sale de tu cuenta apenas te pagan, no tienes que decidir "ahorrar" cada vez — ya está hecho.',
+    'Revisa tus gastos fijos una vez al año: suscripciones que ya no usas son la fuga de dinero más fácil de tapar.',
+    'Pagar más del mínimo en una tarjeta de crédito, aunque sea poquito más, reduce muchísimo el tiempo y el interés total.',
+    'Un fondo de emergencia de 3 a 6 meses de gastos te evita tener que endeudarte cuando surge un imprevisto.',
+    'Anotar el "para qué" de cada meta de ahorro (el viaje, el fondo, lo que sea) ayuda a mantener la disciplina cuando da pereza.'
+  ];
+
+  function renderTip(d){
+    var el = document.getElementById('tipText');
+    if(!el) return;
+    // Rota una vez al dia (mismo tip todo el dia, cambia manana) usando la
+    // fecha como semilla, en vez de un indice aleatorio que cambiaria en
+    // cada refresh.
+    var hoy = new Date();
+    var semilla = hoy.getFullYear() * 372 + hoy.getMonth() * 31 + hoy.getDate();
+    el.textContent = TIPS[semilla % TIPS.length];
+  }
+
+  // Asigna un color estable de la paleta (--s1.--s8) a cada categoría, a
+  // partir de su nombre (mismo texto = mismo color siempre). Así el icono de
+  // "Mercado/Alimentacion" en la lista de gastos, por ejemplo, siempre se ve
+  // con el mismo tinte, sin depender del orden o el monto (a diferencia del
+  // grafico de barras, que sí colorea por ranking del mes).
+  function categoryColorVar(nombre){
+    var str = String(nombre || '');
+    var hash = 0;
+    for (var i = 0; i < str.length; i++){ hash = (hash * 31 + str.charCodeAt(i)) >>> 0; }
+    return '--s' + ((hash % 8) + 1);
+  }
+
   function groupByDay(rows){
     var groups = {}; var order = [];
     rows.forEach(function(r){
@@ -1055,8 +1107,11 @@ details.setup li{margin-bottom:4px;}
     el.innerHTML = groups.map(function(g){
       var subtotal = g.rows.reduce(function(a,r){return a+r.monto;},0);
       var rowsHtml = g.rows.map(function(r){
-        return '<div class="list-row"><div class="ico">'+(cats[r.categoria]||'📦')+'</div>'+
-          '<div class="info"><div class="t1">'+esc(r.descripcion)+'</div><div class="t2">'+esc(r.categoria)+' · '+esc(r.medioPago||'')+'</div></div>'+
+        var tags = [r.categoria, r.medioPago].filter(Boolean).map(function(t){
+          return '<span class="tag-pill">'+esc(t)+'</span>';
+        }).join('');
+        return '<div class="list-row"><div class="ico" style="--ico-accent:var('+categoryColorVar(r.categoria)+')">'+(cats[r.categoria]||'📦')+'</div>'+
+          '<div class="info"><div class="t1">'+esc(r.descripcion)+'</div><div class="tag-row">'+tags+'</div></div>'+
           '<div class="amt gasto">-'+fmtCOP(r.monto)+'</div></div>';
       }).join('');
       return '<div class="day-group-label">'+fmtDayLabel(g.fecha)+' · '+fmtCOP(subtotal)+'</div>'+rowsHtml;
@@ -1071,8 +1126,9 @@ details.setup li{margin-bottom:4px;}
     el.innerHTML = groups.map(function(g){
       var subtotal = g.rows.reduce(function(a,r){return a+r.monto;},0);
       var rowsHtml = g.rows.map(function(r){
-        return '<div class="list-row"><div class="ico">💵</div>'+
-          '<div class="info"><div class="t1">'+esc(r.fuente)+'</div><div class="t2">'+esc(r.categoria)+'</div></div>'+
+        var tags = r.categoria ? '<span class="tag-pill">'+esc(r.categoria)+'</span>' : '';
+        return '<div class="list-row"><div class="ico" style="--ico-accent:var(--good)">💵</div>'+
+          '<div class="info"><div class="t1">'+esc(r.fuente)+'</div><div class="tag-row">'+tags+'</div></div>'+
           '<div class="amt ingreso">+'+fmtCOP(r.monto)+'</div></div>';
       }).join('');
       return '<div class="day-group-label">'+fmtDayLabel(g.fecha)+' · '+fmtCOP(subtotal)+'</div>'+rowsHtml;
