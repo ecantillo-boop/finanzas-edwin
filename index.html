@@ -83,15 +83,15 @@ main{padding:14px 16px 24px;}
 h2.section-title{font-size:15px;font-weight:700;margin:22px 0 10px;color:var(--text-primary);}
 h2.section-title:first-child{margin-top:2px;}
 
-.card, .fixed-card, .card-item, .quincena-card, .stat-tile, .gate-card, .fijo-pay-form, .tip-card, .view-toggle{
+.card, .fixed-card, .card-item, .stat-tile, .gate-card, .fijo-pay-form, .tip-card{
   background: color-mix(in srgb, var(--surface-card) 72%, transparent);
   backdrop-filter: blur(14px) saturate(160%);
   -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border: 1px solid color-mix(in srgb, var(--text-primary) 10%, transparent);
-  box-shadow: inset 0 1px 0 color-mix(in srgb, white 35%, transparent), 0 6px 20px rgba(0,0,0,0.06);
+  border: 1px solid color-mix(in srgb, var(--text-primary) 7%, transparent);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 35%, transparent), 0 8px 24px rgba(0,0,0,0.07);
 }
 .card{
-  border-radius:16px;
+  border-radius:20px;
   padding:16px; margin-bottom:12px;
 }
 .hero-balance{
@@ -107,7 +107,8 @@ h2.section-title:first-child{margin-top:2px;}
 }
 .hero-balance > *{position:relative; z-index:1;}
 .hero-balance .label{font-size:12px;opacity:.75;letter-spacing:.02em;text-transform:uppercase;}
-.hero-balance .amount{font-size:32px;font-weight:800;margin:6px 0 2px;letter-spacing:-0.02em;}
+.hero-balance .amount{font-size:36px;font-weight:800;margin:6px 0 2px;letter-spacing:-0.03em;}
+.hero-balance .trend{font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;}
 .chip{
   display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;
   padding:4px 10px;border-radius:999px;
@@ -144,30 +145,47 @@ h2.section-title:first-child{margin-top:2px;}
 
 .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px;}
 
-.view-toggle{display:flex;gap:4px;border-radius:12px;padding:4px;margin-bottom:14px;}
-.view-toggle-btn{flex:1;border:none;background:transparent;padding:9px 6px;border-radius:9px;font-size:12.5px;font-weight:700;color:var(--text-muted);cursor:pointer;}
-.view-toggle-btn.active{background:var(--surface-card);color:var(--text-primary);box-shadow:0 1px 3px rgba(0,0,0,.12);}
-
-.quincena-card{
-  border-radius:18px; padding:16px; margin-bottom:12px;
-}
-.quincena-card.actual{ border-color:var(--s1); }
-.quincena-header{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:4px;}
-.quincena-header .titulo{font-size:13px;font-weight:700;color:var(--text-secondary);}
-.badge-actual{
-  font-size:10px;font-weight:800;letter-spacing:.03em;color:var(--s1);
-  background:rgba(42,120,214,.14);padding:3px 8px;border-radius:999px;white-space:nowrap;
-}
-.quincena-balance{font-size:23px;font-weight:800;margin:2px 0 8px;font-variant-numeric:tabular-nums;}
-.quincena-mini-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;}
-.quincena-mini-stats .mini{background:var(--surface-2);border-radius:10px;padding:8px 6px;text-align:center;}
-.quincena-mini-stats .mini .k{font-size:9px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.02em;}
-.quincena-mini-stats .mini .v{font-size:12px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
-.stat-tile{border-radius:14px;padding:12px;}
+.stat-tile{border-radius:16px;padding:12px;}
 .stat-tile .k{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.03em;}
 .stat-tile .v{font-size:17px;font-weight:700;margin-top:4px;font-variant-numeric:tabular-nums;}
 .stat-tile .v.pos{color:var(--good);}
 .stat-tile .v.neg{color:var(--critical);}
+
+.nav-shortcut{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;appearance:none;overflow:hidden;}
+.nav-shortcut:active{transform:scale(0.98);}
+.nav-shortcut .cat{font-size:11.5px;color:var(--text-muted);margin-bottom:2px;}
+.nav-shortcut .big-stat{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.nav-shortcut .small-muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+
+.cat-chip-row{display:flex;gap:12px;overflow-x:auto;padding:2px 2px 12px;margin:0 0 4px;-webkit-overflow-scrolling:touch;}
+.cat-chip-row::-webkit-scrollbar{display:none;}
+.cat-chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px;width:62px;}
+.cat-chip-icon{
+  position:relative;width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:19px;
+  background: color-mix(in srgb, var(--ico-accent, var(--text-muted)) 22%, var(--surface-card));
+  border:1px solid color-mix(in srgb, var(--text-primary) 7%, transparent);
+}
+.cat-chip-count{
+  position:absolute; top:-5px; right:-5px; min-width:17px;height:17px;padding:0 4px;border-radius:999px;
+  background:var(--text-primary); color:var(--surface-1); font-size:9.5px; font-weight:800;
+  display:flex;align-items:center;justify-content:center; box-shadow:0 0 0 2px var(--surface-2);
+}
+.cat-chip-label{font-size:10px;color:var(--text-secondary);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
+
+.fab-wrap{
+  position:fixed; left:0; right:0; bottom:calc(76px + env(safe-area-inset-bottom) + 14px);
+  max-width:520px; margin:0 auto; height:0; pointer-events:none; z-index:40;
+}
+.fab-add{
+  position:absolute; right:18px; bottom:0; pointer-events:auto;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--gradient-warm); color:#fff; border:none;
+  font-size:26px;font-weight:600;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 10px 26px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.35);
+  cursor:pointer;
+}
+.fab-add:active{transform:scale(0.92);}
 
 .chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:14px;}
 .badge-parcial{font-size:10.5px;font-weight:700;color:var(--text-muted);background:var(--surface-2);padding:4px 10px;border-radius:999px;white-space:nowrap;}
@@ -215,7 +233,7 @@ h2.section-title:first-child{margin-top:2px;}
 :root[data-theme="dark"] .countdown-chip.soon, @media (prefers-color-scheme:dark){.countdown-chip.soon{color:var(--warning);}}
 
 .fixed-card, .card-item{
-  border-radius:14px;padding:13px 14px;margin-bottom:10px;
+  border-radius:16px;padding:13px 14px;margin-bottom:10px;
 }
 .fixed-card .row1, .card-item .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
 .fixed-card .name, .card-item .name{font-size:14px;font-weight:700;}
@@ -366,54 +384,46 @@ details.setup li{margin-bottom:4px;}
     <!-- RESUMEN -->
     <section class="section active" id="tab-resumen">
 
-      <div class="view-toggle">
-        <button class="view-toggle-btn active" data-view="mensual">Mensual</button>
-        <button class="view-toggle-btn" data-view="quincenal">Quincenal</button>
+      <div class="hero-balance">
+        <div class="label">Efectivo disponible</div>
+        <div class="amount" id="heroBalance">$0</div>
+        <span class="chip good" id="heroChip">Al día</span>
+        <div class="trend" id="heroTrend"></div>
       </div>
 
-      <div id="viewMensual">
-        <div class="hero-balance">
-          <div class="label">Efectivo disponible</div>
-          <div class="amount" id="heroBalance">$0</div>
-          <span class="chip good" id="heroChip">Al día</span>
-        </div>
-
-        <div class="stat-grid">
-          <div class="stat-tile"><div class="k">Balance del mes</div><div class="v" id="statBalanceMes">$0</div></div>
-          <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
-          <div class="stat-tile"><div class="k">Gastos del mes</div><div class="v neg" id="statGastos">$0</div></div>
-          <div class="stat-tile"><div class="k">Fijos pendientes</div><div class="v" id="statFijos">$0</div></div>
-          <div class="stat-tile"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
-          <div class="stat-tile"><div class="k">Saldo tarjetas</div><div class="v neg" id="statTarjetas">$0</div></div>
-        </div>
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="k">Balance del mes</div><div class="v" id="statBalanceMes">$0</div></div>
+        <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
+        <div class="stat-tile"><div class="k">Gastos del mes</div><div class="v neg" id="statGastos">$0</div></div>
+        <div class="stat-tile"><div class="k">Fijos pendientes</div><div class="v" id="statFijos">$0</div></div>
+        <div class="stat-tile"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
+        <div class="stat-tile"><div class="k">Saldo tarjetas</div><div class="v neg" id="statTarjetas">$0</div></div>
+        <div class="stat-tile" style="grid-column:1 / -1;"><div class="k">Pronóstico de gastos (estimado)</div><div class="v neg" id="statPronostico">$0</div></div>
       </div>
 
-      <div id="viewQuincenal" style="display:none;">
-        <div class="quincena-card" id="q1Card">
-          <div class="quincena-header">
-            <div class="titulo" id="q1Titulo">Quincena 1 · día 1 al 15</div>
-            <span class="badge-actual" id="q1Badge" style="display:none;">EN CURSO</span>
-          </div>
-          <div class="quincena-balance" id="q1Balance">$0</div>
-          <span class="chip good" id="q1Chip">Alcanza</span>
-          <div class="quincena-mini-stats">
-            <div class="mini"><div class="k" id="q1IngresosLabel">Ingresos</div><div class="v" id="q1Ingresos">$0</div></div>
-            <div class="mini"><div class="k">Gastos</div><div class="v" id="q1Gastos">$0</div></div>
-            <div class="mini"><div class="k">Fijos</div><div class="v" id="q1Fijos">$0</div></div>
-          </div>
-        </div>
-        <div class="quincena-card" id="q2Card">
-          <div class="quincena-header">
-            <div class="titulo" id="q2Titulo">Quincena 2 · día 16 al 30</div>
-            <span class="badge-actual" id="q2Badge" style="display:none;">EN CURSO</span>
-          </div>
-          <div class="quincena-balance" id="q2Balance">$0</div>
-          <span class="chip good" id="q2Chip">Alcanza</span>
-          <div class="quincena-mini-stats">
-            <div class="mini"><div class="k" id="q2IngresosLabel">Ingresos</div><div class="v" id="q2Ingresos">$0</div></div>
-            <div class="mini"><div class="k">Gastos</div><div class="v" id="q2Gastos">$0</div></div>
-            <div class="mini"><div class="k">Fijos</div><div class="v" id="q2Fijos">$0</div></div>
-          </div>
+      <div class="stat-grid" style="margin-top:10px;">
+        <button type="button" class="card-item nav-shortcut" id="navHistorial">
+          <div class="cat">Historial</div>
+          <div class="big-stat" id="navHistorialCount">0</div>
+          <div class="small-muted">movimientos este mes</div>
+        </button>
+        <button type="button" class="card-item nav-shortcut" id="navCategorias">
+          <div class="cat">Categorías</div>
+          <div class="big-stat" id="navCategoriasTop">—</div>
+          <div class="small-muted" id="navCategoriasSub">Sin datos aún</div>
+        </button>
+      </div>
+
+      <h2 class="section-title">Categorías (mes actual)</h2>
+      <div class="cat-chip-row" id="catChipsRow"><div class="empty-state">Sin gastos este mes</div></div>
+
+      <h2 class="section-title">Gastos de la semana</h2>
+      <div class="card">
+        <div class="chart-head"><span class="small-muted" id="semanaSubtitle"></span><span class="badge-parcial" id="semanaCallout"></span></div>
+        <div class="chart-wrap" style="height:170px;"><canvas id="chartSemana"></canvas></div>
+        <div class="legend-row">
+          <span><span class="legend-dot" style="background:color-mix(in srgb, var(--text-muted) 35%, transparent)"></span>Semana pasada</span>
+          <span><span class="legend-dot" style="background:var(--s2)"></span>Semana actual</span>
         </div>
       </div>
 
@@ -427,7 +437,7 @@ details.setup li{margin-bottom:4px;}
         </div>
       </div>
 
-      <h2 class="section-title">Gastos por categoría (mes actual)</h2>
+      <h2 class="section-title" id="catSectionAnchor">Gastos por categoría (mes actual)</h2>
       <div class="card"><div class="chart-wrap"><canvas id="chartCategorias"></canvas></div></div>
 
       <h2 class="section-title">Próximos vencimientos</h2>
@@ -561,6 +571,10 @@ details.setup li{margin-bottom:4px;}
   <button class="tab" data-tab="metas"><span class="ic">✈️</span>Metas</button>
 </nav>
 
+<div class="fab-wrap" id="fabWrap" style="display:none;">
+  <button type="button" class="fab-add" id="fabAdd" title="Agregar gasto">+</button>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -638,11 +652,20 @@ details.setup li{margin-bottom:4px;}
   // (UTC-5) usarlo de noche (después de las 7pm aprox.) devuelve la fecha
   // de MAÑANA en vez de la de hoy. Esta función arma el string a mano con
   // getFullYear/getMonth/getDate (que sí son locales) para evitar ese salto.
-  function todayLocalISO(){
-    var d = new Date();
+  function isoFromDate(d){
     var m = String(d.getMonth() + 1).padStart(2, '0');
     var day = String(d.getDate()).padStart(2, '0');
     return d.getFullYear() + '-' + m + '-' + day;
+  }
+  function todayLocalISO(){
+    return isoFromDate(new Date());
+  }
+  // Arma un Date LOCAL (medianoche) a partir de un string "YYYY-MM-DD" sin
+  // pasar por el parseo ambiguo de `new Date(string)` (que en Colombia
+  // corre el día hacia atrás). Misma idea que toDate_ en Code.gs.
+  function parseLocalDate(iso){
+    var p = String(iso || '').split('-');
+    return new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2]));
   }
 
   function showToast(msg){
@@ -722,6 +745,7 @@ details.setup li{margin-bottom:4px;}
     gate.style.display = 'none';
     appEl.style.display = 'block';
     tabbar.style.display = 'flex';
+    document.getElementById('fabWrap').style.display = 'block';
     document.getElementById('familyName').textContent = (state.data.config && state.data.config.nombreFamilia) || 'Finanzas Personales Edwin';
     document.getElementById('todayLabel').textContent = new Intl.DateTimeFormat('es-CO', { weekday:'long', day:'numeric', month:'long' }).format(new Date());
     populateCategorySelects();
@@ -870,7 +894,9 @@ details.setup li{margin-bottom:4px;}
     if(!state.data) return;
     var d = state.data;
     safe(renderResumen, 'resumen')(d);
-    safe(renderResumenQuincenal, 'resumen quincenal')(d);
+    safe(renderNavShortcuts, 'accesos rapidos')(d);
+    safe(renderCatChips, 'chips categoria')(d);
+    safe(renderChartSemana, 'chart semana')(d);
     safe(renderChartMeses, 'chart meses')(d);
     safe(renderChartCategorias, 'chart categorias')(d);
     safe(renderVencimientos, 'vencimientos')(d);
@@ -904,54 +930,75 @@ details.setup li{margin-bottom:4px;}
     document.getElementById('statFijos').textContent = fmtCOP(r.totalGastosFijosPendientesMes);
     document.getElementById('statAhorro').textContent = fmtCOP(r.totalAportesAhorroMes);
     document.getElementById('statTarjetas').textContent = fmtCOP(r.saldoTotalTarjetas);
-  }
+    document.getElementById('statPronostico').textContent = fmtCOP(computeForecast(d));
 
-  function renderQuincenaCard(prefix, q){
-    if(!q) return;
-    document.getElementById(prefix+'Titulo').textContent = 'Quincena '+q.numero+' · gastos día '+q.inicioDia+' al '+q.finDia;
-    var labelEl = document.getElementById(prefix+'IngresosLabel');
-    if(labelEl) labelEl.textContent = q.notaIngreso || 'Ingresos';
-    document.getElementById(prefix+'Badge').style.display = q.esActual ? 'inline-block' : 'none';
-    document.getElementById(prefix+'Card').classList.toggle('actual', !!q.esActual);
-    document.getElementById(prefix+'Balance').textContent = fmtCOP(q.balance);
-    var chip = document.getElementById(prefix+'Chip');
-    if(q.balance >= 0){
-      chip.className = 'chip good'; chip.textContent = '✔ Alcanza';
-    } else if(q.balance > -300000){
-      chip.className = 'chip warning'; chip.textContent = '⚠ Ajustado';
-    } else {
-      chip.className = 'chip critical'; chip.textContent = '⛔ No alcanza';
+    var trendEl = document.getElementById('heroTrend');
+    var serie = d.ingresosVsGastosPorMes || [];
+    if(trendEl && serie.length >= 2){
+      var actual = serie[serie.length-1], anterior = serie[serie.length-2];
+      var balActual = actual.ingresos - actual.gastos;
+      var balAnterior = anterior.ingresos - anterior.gastos;
+      var delta = balActual - balAnterior;
+      var flecha = delta >= 0 ? '↑' : '↓';
+      trendEl.textContent = flecha + ' ' + fmtCOP(Math.abs(delta)) + ' vs. mes anterior (parcial)';
+    } else if(trendEl){
+      trendEl.textContent = '';
     }
-    document.getElementById(prefix+'Ingresos').textContent = fmtCOP(q.ingresos);
-    document.getElementById(prefix+'Gastos').textContent = fmtCOP(q.gastos);
-    document.getElementById(prefix+'Fijos').textContent = fmtCOP(q.gastosFijos);
   }
 
-  function renderResumenQuincenal(d){
-    var rq = d.resumenQuincenal;
-    if(!rq) return;
-    renderQuincenaCard('q1', rq.quincena1);
-    renderQuincenaCard('q2', rq.quincena2);
+  // Estimado simple: promedio de gasto diario hasta hoy, proyectado a los
+  // dias que le quedan al mes. Se muestra siempre como "estimado", nunca
+  // como una cifra exacta o garantizada.
+  function computeForecast(d){
+    var r = d.resumen;
+    var hoy = parseLocalDate(todayLocalISO());
+    var diaDelMes = hoy.getDate();
+    var diasEnMes = new Date(hoy.getFullYear(), hoy.getMonth()+1, 0).getDate();
+    if(!r || diaDelMes <= 0) return (r && r.totalGastosMes) || 0;
+    var promedioDiario = (r.totalGastosMes||0) / diaDelMes;
+    return promedioDiario * diasEnMes;
   }
 
-  var VISTA_KEY = "finanzasFithub_vista";
-  function setVista(v){
-    if(v !== 'quincenal') v = 'mensual';
-    document.getElementById('viewMensual').style.display = v === 'mensual' ? 'block' : 'none';
-    document.getElementById('viewQuincenal').style.display = v === 'quincenal' ? 'block' : 'none';
-    document.querySelectorAll('.view-toggle-btn').forEach(function(b){
-      b.classList.toggle('active', b.dataset.view === v);
-    });
-    try{ localStorage.setItem(VISTA_KEY, v); }catch(e){}
-  }
-  document.querySelectorAll('.view-toggle-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){ setVista(btn.dataset.view); });
+  // ------------------------------------------------------------------
+  // BOTON FLOTANTE "+" (FAB): reutiliza la pestaña Gastos y el formulario
+  // #formGasto que ya existen, en vez de construir un modal nuevo.
+  // ------------------------------------------------------------------
+  document.getElementById('fabAdd').addEventListener('click', function(){
+    var gastosTab = document.querySelector('.tab[data-tab="gastos"]');
+    if(gastosTab) gastosTab.click();
+    var form = document.getElementById('formGasto');
+    var toggleBtn = document.querySelector('[data-toggle="formGasto"]');
+    if(form.style.display === 'none' || !form.style.display){
+      if(toggleBtn) toggleBtn.click();
+    }
+    setTimeout(function(){
+      var montoInput = form.querySelector('input[name="monto"]');
+      if(montoInput) montoInput.focus();
+    }, 60);
   });
-  (function initVista(){
-    var saved = 'mensual';
-    try{ saved = localStorage.getItem(VISTA_KEY) || 'mensual'; }catch(e){}
-    setVista(saved);
-  })();
+
+  // ------------------------------------------------------------------
+  // ACCESOS RAPIDOS "Historial" / "Categorías" en el Resumen
+  // ------------------------------------------------------------------
+  document.getElementById('navHistorial').addEventListener('click', function(){
+    var gastosTab = document.querySelector('.tab[data-tab="gastos"]');
+    if(gastosTab) gastosTab.click();
+  });
+  document.getElementById('navCategorias').addEventListener('click', function(){
+    var anchor = document.getElementById('catSectionAnchor');
+    if(anchor) anchor.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+
+  function renderNavShortcuts(d){
+    var curYm = todayLocalISO().slice(0,7);
+    var movs = (d.gastos||[]).filter(function(g){ return String(g.fecha).slice(0,7) === curYm; }).length
+      + (d.ingresos||[]).filter(function(r){ return String(r.fecha).slice(0,7) === curYm; }).length;
+    document.getElementById('navHistorialCount').textContent = fmtNum(movs);
+
+    var top = (d.gastosPorCategoria||[])[0];
+    document.getElementById('navCategoriasTop').textContent = top ? esc(top.categoria) : '—';
+    document.getElementById('navCategoriasSub').textContent = top ? fmtCOP(top.total)+' este mes' : 'Sin datos aún';
+  }
 
   function styleAxis(scale){
     return {
@@ -1026,6 +1073,64 @@ details.setup li{margin-bottom:4px;}
         scales:{
           x:{ grid:{ display:false }, border:{ display:false }, ticks:{ color:getVar('--text-muted'), font:{size:10.5} } },
           y:{ grid:{ display:false }, border:{ display:false }, ticks:{ color:getVar('--text-muted'), font:{size:10.5}, maxTicksLimit:5, callback:function(v){ return fmtNum(v/1000)+'k'; } } }
+        }
+      }
+    });
+  }
+
+  var DIA_LETRA = ['D','L','M','X','J','V','S']; // getDay(): 0=domingo
+
+  function renderChartSemana(d){
+    if(chartLibMissing('chartSemana')) return;
+    destroyChart('semana');
+    var totales = {};
+    (d.gastos||[]).forEach(function(g){ totales[g.fecha] = (totales[g.fecha]||0) + g.monto; });
+
+    var hoy = parseLocalDate(todayLocalISO());
+    var dias = [];
+    for(var i = 6; i >= 0; i--){
+      var dt = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - i);
+      var dtPrev = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - i - 7);
+      var fecha = isoFromDate(dt);
+      dias.push({ fecha: fecha, label: DIA_LETRA[dt.getDay()], actual: totales[fecha] || 0, pasada: totales[isoFromDate(dtPrev)] || 0 });
+    }
+    var hoyIdx = dias.length - 1;
+
+    var subtitle = document.getElementById('semanaSubtitle');
+    if(subtitle){
+      var totalActual = dias.reduce(function(a,x){ return a + x.actual; }, 0);
+      subtitle.textContent = 'Esta semana: ' + fmtCOP(totalActual);
+    }
+    var callout = document.getElementById('semanaCallout');
+    if(callout) callout.textContent = dias[hoyIdx].actual > 0 ? ('Hoy: ' + fmtCOP(dias[hoyIdx].actual)) : 'Hoy: sin gastos';
+
+    var colorHoy = getVar('--s2');
+    var colorMuted = hexToRgba(getVar('--text-muted'), 0.30);
+    var barColors = dias.map(function(x, idx){ return idx === hoyIdx ? colorHoy : colorMuted; });
+
+    var ctx = document.getElementById('chartSemana').getContext('2d');
+    charts.semana = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: dias.map(function(x){ return x.label; }),
+        datasets: [
+          { label:'Semana pasada', data: dias.map(function(x){ return x.pasada; }), backgroundColor: hexToRgba(getVar('--text-muted'), 0.16), borderRadius:6, maxBarThickness:16 },
+          { label:'Semana actual', data: dias.map(function(x){ return x.actual; }), backgroundColor: barColors, borderRadius:6, maxBarThickness:16 }
+        ]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{
+          legend:{ display:false },
+          tooltip:{
+            backgroundColor:'rgba(20,20,20,0.92)', titleColor:'#fff', bodyColor:'rgba(255,255,255,0.85)',
+            borderWidth:0, padding:10, cornerRadius:10, displayColors:true, boxPadding:4, usePointStyle:true,
+            callbacks:{ label:function(ctx){ return ctx.dataset.label+': '+fmtCOP(ctx.raw); } }
+          }
+        },
+        scales:{
+          x:{ grid:{ display:false }, border:{ display:false }, ticks:{ color:getVar('--text-muted'), font:{ size:11 } } },
+          y:{ display:false, grid:{ display:false } }
         }
       }
     });
@@ -1148,6 +1253,35 @@ details.setup li{margin-bottom:4px;}
     var hash = 0;
     for (var i = 0; i < str.length; i++){ hash = (hash * 31 + str.charCodeAt(i)) >>> 0; }
     return '--s' + ((hash % 8) + 1);
+  }
+
+  // Fila de "chips" por categoria (icono + cuantas veces se registro un
+  // gasto de esa categoria este mes). Compara el mes por texto
+  // (YYYY-MM.slice(0,7)) en vez de parsear la fecha con `new Date(...)`,
+  // para no reintroducir el corrimiento de zona horaria ya corregido.
+  function renderCatChips(d){
+    var el = document.getElementById('catChipsRow');
+    if(!el) return;
+    var curYm = todayLocalISO().slice(0,7);
+    var counts = {};
+    (d.gastos||[]).forEach(function(g){
+      if(String(g.fecha).slice(0,7) !== curYm) return;
+      if(!counts[g.categoria]) counts[g.categoria] = { count:0, total:0 };
+      counts[g.categoria].count++;
+      counts[g.categoria].total += g.monto;
+    });
+    var iconMap = {}; (d.categorias||[]).forEach(function(c){ iconMap[c.nombre] = c.icono; });
+    var items = Object.keys(counts).map(function(k){ return { nombre:k, count:counts[k].count, total:counts[k].total }; });
+    items.sort(function(a,b){ return b.total - a.total; });
+    if(items.length === 0){ el.innerHTML = '<div class="empty-state">Sin gastos este mes</div>'; return; }
+    el.innerHTML = items.map(function(it){
+      return '<div class="cat-chip">'+
+        '<div class="cat-chip-icon" style="--ico-accent:var('+categoryColorVar(it.nombre)+')">'+(iconMap[it.nombre]||'📦')+
+          '<span class="cat-chip-count">'+it.count+'</span>'+
+        '</div>'+
+        '<div class="cat-chip-label">'+esc(it.nombre)+'</div>'+
+      '</div>';
+    }).join('');
   }
 
   function groupByDay(rows){
