@@ -172,11 +172,6 @@ h2.section-title:first-child{margin-top:2px;}
   background: color-mix(in srgb, var(--ico-accent, var(--text-muted)) 22%, var(--surface-card));
   border:1px solid color-mix(in srgb, var(--text-primary) 7%, transparent);
 }
-.cat-chip-count{
-  position:absolute; top:-5px; right:-5px; min-width:17px;height:17px;padding:0 4px;border-radius:999px;
-  background:var(--text-primary); color:var(--surface-1); font-size:9.5px; font-weight:800;
-  display:flex;align-items:center;justify-content:center; box-shadow:0 0 0 2px var(--surface-2);
-}
 .cat-chip-label{font-size:10px;color:var(--text-secondary);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
 
 .fab-wrap{
@@ -1287,9 +1282,7 @@ details.setup li{margin-bottom:4px;}
     if(items.length === 0){ el.innerHTML = '<div class="empty-state">Sin gastos este mes</div>'; return; }
     el.innerHTML = items.map(function(it){
       return '<div class="cat-chip">'+
-        '<div class="cat-chip-icon" style="--ico-accent:var('+categoryColorVar(it.nombre)+')">'+(iconMap[it.nombre]||'📦')+
-          '<span class="cat-chip-count">'+it.count+'</span>'+
-        '</div>'+
+        '<div class="cat-chip-icon" style="--ico-accent:var('+categoryColorVar(it.nombre)+')">'+(iconMap[it.nombre]||'📦')+'</div>'+
         '<div class="cat-chip-label">'+esc(it.nombre)+'</div>'+
       '</div>';
     }).join('');
@@ -1310,85 +1303,18 @@ details.setup li{margin-bottom:4px;}
     if(rows.length === 0){ el.innerHTML = '<div class="empty-state">Sin gastos registrados aún</div>'; return; }
     var groups = groupByDay(rows);
     var cats = {}; (d.categorias||[]).forEach(function(c){ cats[c.nombre] = c.icono; });
-    var icoIdx = 0;
     el.innerHTML = groups.map(function(g){
       var subtotal = g.rows.reduce(function(a,r){return a+r.monto;},0);
       var rowsHtml = g.rows.map(function(r){
         var tags = [r.categoria, r.medioPago].filter(Boolean).map(function(t){
           return '<span class="tag-pill">'+esc(t)+'</span>';
         }).join('');
-        var icoId = 'gastoIco' + (icoIdx++);
-        return '<div class="list-row"><div class="ico" id="'+icoId+'" style="--ico-accent:var('+categoryColorVar(r.categoria)+')">'+(cats[r.categoria]||'📦')+'</div>'+
+        return '<div class="list-row"><div class="ico" style="--ico-accent:var('+categoryColorVar(r.categoria)+')">'+(cats[r.categoria]||'📦')+'</div>'+
           '<div class="info"><div class="t1">'+esc(r.descripcion)+'</div><div class="tag-row">'+tags+'</div></div>'+
           '<div class="amt gasto">-'+fmtCOP(r.monto)+'</div></div>';
       }).join('');
       return '<div class="day-group-label">'+fmtDayLabel(g.fecha)+' · '+fmtCOP(subtotal)+'</div>'+rowsHtml;
     }).join('');
-
-    // Intento de logo de marca (mejor-esfuerzo, no bloqueante): si la
-    // descripcion trae una palabra con pinta de marca (ej. "Compra tenis
-    // Adidas"), se reemplaza el icono de categoria por el favicon real de
-    // esa marca en cuanto (si) cargue. Si no hay match o el dominio no
-    // existe, se queda tal cual el icono de categoria.
-    icoIdx = 0;
-    groups.forEach(function(g){
-      g.rows.forEach(function(r){
-        var icoId = 'gastoIco' + (icoIdx++);
-        resolveBrandLogo(r.descripcion, function(url){
-          var icoEl = document.getElementById(icoId);
-          if(icoEl) icoEl.innerHTML = '<img src="'+url+'" alt="" style="width:22px;height:22px;border-radius:6px;object-fit:contain;">';
-        });
-      });
-    });
-  }
-
-  // ------------------------------------------------------------------
-  // LOGO DE MARCA POR DESCRIPCION (mejor-esfuerzo, sin cuentas ni tokens)
-  // ------------------------------------------------------------------
-  // Usa el servicio de favicons de Google (publico, sin llave), asi que
-  // NO requiere que configures nada. La limitacion: ese servicio casi
-  // siempre responde "algo" aunque el dominio adivinado no sea el real,
-  // asi que solo se intenta cuando la descripcion trae una palabra con
-  // mayuscula inicial que no sea una palabra generica (compra, pago,
-  // mercado, etc.) — la señal mas confiable de que ahi hay un nombre de
-  // marca. Si el dominio adivinado ni siquiera existe, la imagen falla y
-  // sencillamente se conserva el icono de la categoria.
-  var BRAND_STOPWORDS = [
-    'compra','compras','pago','pagos','factura','recibo','mensual','cuota',
-    'servicio','servicios','suscripcion','suscripción','mercado','super',
-    'supermercado','tienda','varios','gasto','gastos','efectivo','tarjeta',
-    'credito','crédito','debito','débito','transferencia','domicilio',
-    'envio','envío','viaje','regalo','otro','otros','enero','febrero',
-    'marzo','abril','mayo','junio','julio','agosto','septiembre','octubre',
-    'noviembre','diciembre'
-  ];
-  function isCapitalized(word){
-    var first = word.charAt(0);
-    return first !== '' && first === first.toUpperCase() && first !== first.toLowerCase();
-  }
-  function guessBrandWord(descripcion){
-    var words = String(descripcion || '').split(/\s+/);
-    for(var i = 0; i < words.length; i++){
-      var raw = words[i].replace(/[^A-Za-zÀ-ÿ]/g, '');
-      if(raw.length < 3 || !isCapitalized(raw)) continue;
-      if(BRAND_STOPWORDS.indexOf(raw.toLowerCase()) !== -1) continue;
-      return raw.toLowerCase();
-    }
-    return null;
-  }
-  var brandLogoCache = {};
-  function resolveBrandLogo(descripcion, onFound){
-    var word = guessBrandWord(descripcion);
-    if(!word) return;
-    if(brandLogoCache.hasOwnProperty(word)){
-      if(brandLogoCache[word]) onFound(brandLogoCache[word]);
-      return;
-    }
-    var url = 'https://www.google.com/s2/favicons?sz=64&domain=' + encodeURIComponent(word + '.com');
-    var img = new Image();
-    img.onload = function(){ brandLogoCache[word] = url; onFound(url); };
-    img.onerror = function(){ brandLogoCache[word] = null; };
-    img.src = url;
   }
 
   function renderListaIngresos(d){
