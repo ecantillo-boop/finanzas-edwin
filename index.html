@@ -157,23 +157,6 @@ h2.section-title:first-child{margin-top:2px;}
 .nav-shortcut .big-stat{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
 .nav-shortcut .small-muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
 
-.cat-chip-row{
-  display:flex;gap:12px;overflow-x:auto;padding:2px 32px 12px 2px;margin:0 -16px 4px;-webkit-overflow-scrolling:touch;
-  scroll-snap-type:x proximity;
-  mask-image:linear-gradient(to right, black calc(100% - 44px), transparent 100%);
-  -webkit-mask-image:linear-gradient(to right, black calc(100% - 44px), transparent 100%);
-}
-.cat-chip-row::before{content:"";flex:0 0 14px;}
-.cat-chip-row::-webkit-scrollbar{display:none;}
-.cat-chip{scroll-snap-align:start;}
-.cat-chip{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:6px;width:62px;}
-.cat-chip-icon{
-  position:relative;width:46px;height:46px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:19px;
-  background: color-mix(in srgb, var(--ico-accent, var(--text-muted)) 22%, var(--surface-card));
-  border:1px solid color-mix(in srgb, var(--text-primary) 7%, transparent);
-}
-.cat-chip-label{font-size:10px;color:var(--text-secondary);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
-
 .fab-wrap{
   position:fixed; left:0; right:0; bottom:calc(76px + env(safe-area-inset-bottom) + 14px);
   max-width:520px; margin:0 auto; height:0; pointer-events:none; z-index:40;
@@ -398,8 +381,7 @@ details.setup li{margin-bottom:4px;}
         <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
         <div class="stat-tile"><div class="k">Gastos del mes</div><div class="v neg" id="statGastos">$0</div></div>
         <div class="stat-tile"><div class="k">Fijos pendientes</div><div class="v" id="statFijos">$0</div></div>
-        <div class="stat-tile"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
-        <div class="stat-tile"><div class="k">Saldo tarjetas</div><div class="v neg" id="statTarjetas">$0</div></div>
+        <div class="stat-tile" style="grid-column:1 / -1;"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
       </div>
 
       <div class="stat-grid" style="margin-top:10px;">
@@ -414,9 +396,6 @@ details.setup li{margin-bottom:4px;}
           <div class="small-muted" id="navCategoriasSub">Sin datos aún</div>
         </button>
       </div>
-
-      <h2 class="section-title">Categorías (mes actual)</h2>
-      <div class="cat-chip-row" id="catChipsRow"><div class="empty-state">Sin gastos este mes</div></div>
 
       <h2 class="section-title">Gastos de la semana</h2>
       <div class="card">
@@ -463,7 +442,7 @@ details.setup li{margin-bottom:4px;}
         <div class="two-col">
           <div class="field"><label>Medio de pago</label>
             <select name="medioPago">
-              <option>Efectivo</option><option>Debito</option><option>Tarjeta credito</option><option>Transferencia</option>
+              <option>Efectivo</option><option>Debito</option><option>Tarjeta credito</option><option>Transferencia</option><option>Billetera digital (Nequi/Daviplata)</option>
             </select>
           </div>
           <div class="field"><label>Notas (opcional)</label><input type="text" name="notas"></div>
@@ -648,16 +627,16 @@ details.setup li{margin-bottom:4px;}
   }
   function fmtNum(n){ return new Intl.NumberFormat('es-CO').format(n); }
 
-  // Fecha de HOY en formato YYYY-MM-DD usando la hora LOCAL del celular.
-  // OJO: Date#toISOString() siempre convierte a UTC, así que en Colombia
-  // (UTC-5) usarlo de noche (después de las 7pm aprox.) devuelve la fecha
-  // de MAÑANA en vez de la de hoy. Esta función arma el string a mano con
-  // getFullYear/getMonth/getDate (que sí son locales) para evitar ese salto.
   function isoFromDate(d){
     var m = String(d.getMonth() + 1).padStart(2, '0');
     var day = String(d.getDate()).padStart(2, '0');
     return d.getFullYear() + '-' + m + '-' + day;
   }
+  // Fecha de HOY en formato YYYY-MM-DD usando la hora LOCAL del celular.
+  // OJO: Date#toISOString() siempre convierte a UTC, así que en Colombia
+  // (UTC-5) usarlo de noche (después de las 7pm aprox.) devuelve la fecha
+  // de MAÑANA en vez de la de hoy. Esta función arma el string a mano con
+  // getFullYear/getMonth/getDate (que sí son locales) para evitar ese salto.
   function todayLocalISO(){
     return isoFromDate(new Date());
   }
@@ -896,7 +875,6 @@ details.setup li{margin-bottom:4px;}
     var d = state.data;
     safe(renderResumen, 'resumen')(d);
     safe(renderNavShortcuts, 'accesos rapidos')(d);
-    safe(renderCatChips, 'chips categoria')(d);
     safe(renderChartSemana, 'chart semana')(d);
     safe(renderChartMeses, 'chart meses')(d);
     safe(renderChartCategorias, 'chart categorias')(d);
@@ -930,7 +908,6 @@ details.setup li{margin-bottom:4px;}
     document.getElementById('statGastos').textContent = fmtCOP(r.totalGastosMes);
     document.getElementById('statFijos').textContent = fmtCOP(r.totalGastosFijosPendientesMes);
     document.getElementById('statAhorro').textContent = fmtCOP(r.totalAportesAhorroMes);
-    document.getElementById('statTarjetas').textContent = fmtCOP(r.saldoTotalTarjetas);
 
     var trendEl = document.getElementById('heroTrend');
     var serie = d.ingresosVsGastosPorMes || [];
@@ -1259,33 +1236,6 @@ details.setup li{margin-bottom:4px;}
     var hash = 0;
     for (var i = 0; i < str.length; i++){ hash = (hash * 31 + str.charCodeAt(i)) >>> 0; }
     return '--s' + ((hash % 8) + 1);
-  }
-
-  // Fila de "chips" por categoria (icono + cuantas veces se registro un
-  // gasto de esa categoria este mes). Compara el mes por texto
-  // (YYYY-MM.slice(0,7)) en vez de parsear la fecha con `new Date(...)`,
-  // para no reintroducir el corrimiento de zona horaria ya corregido.
-  function renderCatChips(d){
-    var el = document.getElementById('catChipsRow');
-    if(!el) return;
-    var curYm = todayLocalISO().slice(0,7);
-    var counts = {};
-    (d.gastos||[]).forEach(function(g){
-      if(String(g.fecha).slice(0,7) !== curYm) return;
-      if(!counts[g.categoria]) counts[g.categoria] = { count:0, total:0 };
-      counts[g.categoria].count++;
-      counts[g.categoria].total += g.monto;
-    });
-    var iconMap = {}; (d.categorias||[]).forEach(function(c){ iconMap[c.nombre] = c.icono; });
-    var items = Object.keys(counts).map(function(k){ return { nombre:k, count:counts[k].count, total:counts[k].total }; });
-    items.sort(function(a,b){ return b.total - a.total; });
-    if(items.length === 0){ el.innerHTML = '<div class="empty-state">Sin gastos este mes</div>'; return; }
-    el.innerHTML = items.map(function(it){
-      return '<div class="cat-chip">'+
-        '<div class="cat-chip-icon" style="--ico-accent:var('+categoryColorVar(it.nombre)+')">'+(iconMap[it.nombre]||'📦')+'</div>'+
-        '<div class="cat-chip-label">'+esc(it.nombre)+'</div>'+
-      '</div>';
-    }).join('');
   }
 
   function groupByDay(rows){
