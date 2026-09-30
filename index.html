@@ -151,11 +151,32 @@ h2.section-title:first-child{margin-top:2px;}
 .stat-tile .v.pos{color:var(--good);}
 .stat-tile .v.neg{color:var(--critical);}
 
+.cashflow-alert{
+  display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:14px;margin-bottom:12px;
+  font-size:12.5px;font-weight:600;color:var(--text-primary);line-height:1.35;
+  background:color-mix(in srgb, var(--warning) 14%, var(--surface-card));
+  border:1px solid color-mix(in srgb, var(--warning) 30%, transparent);
+}
+.cashflow-alert.good{
+  background:color-mix(in srgb, var(--good) 12%, var(--surface-card));
+  border-color:color-mix(in srgb, var(--good) 28%, transparent);
+}
+.cashflow-alert.critical{
+  background:color-mix(in srgb, var(--critical) 12%, var(--surface-card));
+  border-color:color-mix(in srgb, var(--critical) 28%, transparent);
+}
+.cashflow-alert .ico{font-size:17px;flex-shrink:0;}
+
+.delta-pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;white-space:nowrap;}
+.delta-pill.up{background:rgba(208,59,59,.14);color:var(--critical);}
+.delta-pill.down{background:rgba(12,163,12,.14);color:var(--good);}
+
 .nav-shortcut{width:100%;font:inherit;color:inherit;text-align:left;cursor:pointer;appearance:none;overflow:hidden;}
 .nav-shortcut:active{transform:scale(0.98);}
 .nav-shortcut .cat{font-size:11.5px;color:var(--text-muted);margin-bottom:2px;}
 .nav-shortcut .big-stat{font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
 .nav-shortcut .small-muted{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;}
+.nav-shortcut .streak{font-size:11px;color:var(--serious);margin-top:2px;font-weight:700;}
 
 .fab-wrap{
   position:fixed; left:0; right:0; bottom:calc(76px + env(safe-area-inset-bottom) + 14px);
@@ -233,13 +254,14 @@ h2.section-title:first-child{margin-top:2px;}
 .small-muted{font-size:11.5px;color:var(--text-muted);}
 
 form.quick-add{display:grid;gap:10px;}
-.field{display:flex;flex-direction:column;gap:5px;}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0;}
 .field label{font-size:11.5px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.02em;}
 .field input, .field select, .field textarea{
   border:1px solid var(--border);background:var(--surface-2);color:var(--text-primary);
   border-radius:10px;padding:10px 11px;font-size:14.5px;font-family:inherit;
+  width:100%;min-width:0;
 }
-.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;min-width:0;}
 button.primary{
   background:var(--gradient-warm);color:#fff;border:none;border-radius:12px;
   padding:12px;font-size:14.5px;font-weight:700;cursor:pointer;
@@ -376,6 +398,8 @@ details.setup li{margin-bottom:4px;}
         <div class="trend" id="heroTrend"></div>
       </div>
 
+      <div class="cashflow-alert" id="cashOutBanner" style="display:none;"></div>
+
       <div class="stat-grid">
         <div class="stat-tile"><div class="k">Balance del mes</div><div class="v" id="statBalanceMes">$0</div></div>
         <div class="stat-tile"><div class="k">Ingresos del mes</div><div class="v pos" id="statIngresos">$0</div></div>
@@ -384,11 +408,19 @@ details.setup li{margin-bottom:4px;}
         <div class="stat-tile" style="grid-column:1 / -1;"><div class="k">Ahorro aportado</div><div class="v pos" id="statAhorro">$0</div></div>
       </div>
 
+      <h2 class="section-title">Tu salud financiera</h2>
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="k">Tasa de ahorro</div><div class="v" id="statTasaAhorro">—</div></div>
+        <div class="stat-tile"><div class="k">Deuda / ingreso</div><div class="v" id="statDeudaIngreso">—</div></div>
+        <div class="stat-tile" style="grid-column:1 / -1;"><div class="k">Fondo de emergencia</div><div class="v" id="statFondoEmergencia">—</div></div>
+      </div>
+
       <div class="stat-grid" style="margin-top:10px;">
         <button type="button" class="card-item nav-shortcut" id="navHistorial">
           <div class="cat">Historial</div>
           <div class="big-stat" id="navHistorialCount">0</div>
           <div class="small-muted">movimientos este mes</div>
+          <div class="streak" id="navHistorialStreak"></div>
         </button>
         <button type="button" class="card-item nav-shortcut" id="navCategorias">
           <div class="cat">Categorías</div>
@@ -419,6 +451,11 @@ details.setup li{margin-bottom:4px;}
 
       <h2 class="section-title" id="catSectionAnchor">Gastos por categoría (mes actual)</h2>
       <div class="card"><div class="chart-wrap"><canvas id="chartCategorias"></canvas></div></div>
+
+      <div class="card" id="comparativaCategorias" style="display:none;">
+        <div class="small-muted" style="margin-bottom:6px;">Cambios vs. tu promedio de meses anteriores</div>
+        <div id="comparativaCategoriasList"></div>
+      </div>
 
       <h2 class="section-title">Próximos vencimientos</h2>
       <div class="card" id="proximosVencimientos"><div class="empty-state">Sin datos aún</div></div>
@@ -875,6 +912,9 @@ details.setup li{margin-bottom:4px;}
     var d = state.data;
     safe(renderResumen, 'resumen')(d);
     safe(renderNavShortcuts, 'accesos rapidos')(d);
+    safe(renderSaludFinanciera, 'salud financiera')(d);
+    safe(renderCashOutProjection, 'proyeccion de efectivo')(d);
+    safe(renderComparativaCategorias, 'comparativa categorias')(d);
     safe(renderChartSemana, 'chart semana')(d);
     safe(renderChartMeses, 'chart meses')(d);
     safe(renderChartCategorias, 'chart categorias')(d);
@@ -962,7 +1002,174 @@ details.setup li{margin-bottom:4px;}
     var top = (d.gastosPorCategoria||[])[0];
     document.getElementById('navCategoriasTop').textContent = top ? esc(top.categoria) : '—';
     document.getElementById('navCategoriasSub').textContent = top ? fmtCOP(top.total)+' este mes' : 'Sin datos aún';
+
+    // Racha de registro: dias seguidos (hasta hoy) con al menos un gasto o
+    // ingreso anotado. Si hoy todavia no has registrado nada no se rompe la
+    // racha por eso — se empieza a contar desde ayer.
+    var fechasConMovimiento = {};
+    (d.gastos||[]).forEach(function(g){ fechasConMovimiento[g.fecha] = true; });
+    (d.ingresos||[]).forEach(function(r){ fechasConMovimiento[r.fecha] = true; });
+    var cursor = parseLocalDate(todayLocalISO());
+    if(!fechasConMovimiento[isoFromDate(cursor)]){
+      cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() - 1);
+    }
+    var racha = 0;
+    while(fechasConMovimiento[isoFromDate(cursor)]){
+      racha++;
+      cursor = new Date(cursor.getFullYear(), cursor.getMonth(), cursor.getDate() - 1);
+    }
+    var streakEl = document.getElementById('navHistorialStreak');
+    if(streakEl) streakEl.textContent = racha > 0 ? ('🔥 ' + racha + (racha === 1 ? ' día seguido' : ' días seguidos')) : '';
   }
+
+  // ------------------------------------------------------------------
+  // SALUD FINANCIERA: tasa de ahorro, deuda/ingreso y fondo de emergencia.
+  // Se calculan todas en el cliente con datos que ya vienen en el payload,
+  // no requieren cambios en Code.gs ni en la hoja de calculo.
+  // ------------------------------------------------------------------
+  function renderSaludFinanciera(d){
+    var r = d.resumen;
+
+    var tasaEl = document.getElementById('statTasaAhorro');
+    if(r.totalIngresosMes > 0){
+      var tasa = ((r.totalIngresosMes - r.totalGastosMes) / r.totalIngresosMes) * 100;
+      tasaEl.textContent = (tasa >= 0 ? '+' : '') + tasa.toFixed(0) + '%';
+      tasaEl.className = 'v ' + (tasa >= 20 ? 'pos' : (tasa >= 0 ? '' : 'neg'));
+    } else {
+      tasaEl.textContent = '—'; tasaEl.className = 'v';
+    }
+
+    var deudaTotal = (d.tarjetas||[]).reduce(function(a,t){ return a + (t.saldoActual||0); }, 0);
+    var deudaEl = document.getElementById('statDeudaIngreso');
+    if(r.totalIngresosMes > 0){
+      var ratio = (deudaTotal / r.totalIngresosMes) * 100;
+      deudaEl.textContent = ratio.toFixed(0) + '%';
+      deudaEl.className = 'v ' + (ratio === 0 ? 'pos' : (ratio > 200 ? 'neg' : ''));
+    } else {
+      deudaEl.textContent = deudaTotal > 0 ? 'Sin ingresos' : '—'; deudaEl.className = 'v';
+    }
+
+    // Ahorro total acumulado = suma de todos los aportes menos todos los
+    // retiros historicos (no depende de un campo especifico del backend).
+    var ahorroAcumulado = (d.ahorros||[]).reduce(function(a, mv){
+      var monto = Number(mv.monto) || 0;
+      return a + (mv.tipo === 'Retiro' ? -monto : monto);
+    }, 0);
+    // Gasto mensual promedio: usa los meses anteriores completos de la
+    // serie de 6 meses (excluye el mes actual, que esta parcial y
+    // distorsiona el promedio); si no hay suficiente historial, usa el
+    // gasto del mes actual como mejor estimado disponible.
+    var serieMeses = d.ingresosVsGastosPorMes || [];
+    var mesesCompletos = serieMeses.slice(0, -1);
+    var gastoPromedioMensual = mesesCompletos.length
+      ? mesesCompletos.reduce(function(a,s){ return a + s.gastos; }, 0) / mesesCompletos.length
+      : r.totalGastosMes;
+    var fondoEl = document.getElementById('statFondoEmergencia');
+    if(gastoPromedioMensual > 0){
+      var mesesCubiertos = ahorroAcumulado / gastoPromedioMensual;
+      fondoEl.textContent = mesesCubiertos.toFixed(1) + ' meses';
+      fondoEl.className = 'v ' + (mesesCubiertos >= 3 ? 'pos' : (mesesCubiertos < 1 ? 'neg' : ''));
+    } else {
+      fondoEl.textContent = '—'; fondoEl.className = 'v';
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // PROYECCION "se te acaba el efectivo el dia X": usa el ritmo de gasto de
+  // los ultimos 14 dias (no el promedio del mes, que es muy inestable a
+  // inicios de mes) para estimar cuantos dias mas te alcanza el efectivo
+  // disponible. Siempre se presenta como estimado, nunca como una fecha
+  // garantizada.
+  function renderCashOutProjection(d){
+    var banner = document.getElementById('cashOutBanner');
+    if(!banner) return;
+    var r = d.resumen;
+
+    if(r.efectivoDisponible <= 0){
+      banner.style.display = 'flex';
+      banner.className = 'cashflow-alert critical';
+      banner.innerHTML = '<span class="ico">⛔</span><span>Ya no te queda efectivo disponible este mes. Cualquier gasto nuevo te dejaría en negativo.</span>';
+      return;
+    }
+
+    var hoy = parseLocalDate(todayLocalISO());
+    var totalesPorDia = {};
+    (d.gastos||[]).forEach(function(g){ totalesPorDia[g.fecha] = (totalesPorDia[g.fecha]||0) + g.monto; });
+    var sumaUlt14 = 0;
+    for(var i = 0; i < 14; i++){
+      var dt = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() - i);
+      sumaUlt14 += totalesPorDia[isoFromDate(dt)] || 0;
+    }
+    var ritmoDiario = sumaUlt14 / 14;
+
+    if(ritmoDiario <= 0){
+      banner.style.display = 'none';
+      return;
+    }
+
+    var diasRestantes = Math.floor(r.efectivoDisponible / ritmoDiario);
+    var fechaProyectada = new Date(hoy.getFullYear(), hoy.getMonth(), hoy.getDate() + diasRestantes);
+    var fechaTxt = new Intl.DateTimeFormat('es-CO', { day:'numeric', month:'long' }).format(fechaProyectada);
+
+    banner.style.display = 'flex';
+    if(diasRestantes <= 7){
+      banner.className = 'cashflow-alert critical';
+      banner.innerHTML = '<span class="ico">⏳</span><span>Al ritmo de gasto de los últimos días, tu efectivo se agotaría el <strong>'+fechaTxt+'</strong> (estimado).</span>';
+    } else if(diasRestantes <= 30){
+      banner.className = 'cashflow-alert';
+      banner.innerHTML = '<span class="ico">📉</span><span>Al ritmo actual, tu efectivo te alcanzaría hasta el <strong>'+fechaTxt+'</strong> (estimado).</span>';
+    } else {
+      banner.className = 'cashflow-alert good';
+      banner.innerHTML = '<span class="ico">✔</span><span>Al ritmo actual, tu efectivo te alcanza por más de '+Math.floor(diasRestantes/30)+' mes(es) (estimado).</span>';
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // COMPARATIVA POR CATEGORIA: gasto de este mes vs. el promedio de hasta
+  // los 3 meses anteriores en esa misma categoria. Se calcula agrupando el
+  // historial completo de "gastos" que ya viene en el payload — no
+  // necesita datos nuevos del backend.
+  // ------------------------------------------------------------------
+  function renderComparativaCategorias(d){
+    var card = document.getElementById('comparativaCategorias');
+    var list = document.getElementById('comparativaCategoriasList');
+    if(!card || !list) return;
+    var curYm = todayLocalISO().slice(0,7);
+
+    // catYm[categoria][yyyy-mm] = total
+    var catYm = {};
+    (d.gastos||[]).forEach(function(g){
+      var ym = String(g.fecha).slice(0,7);
+      if(!catYm[g.categoria]) catYm[g.categoria] = {};
+      catYm[g.categoria][ym] = (catYm[g.categoria][ym] || 0) + g.monto;
+    });
+
+    var items = [];
+    Object.keys(catYm).forEach(function(categoria){
+      var porMes = catYm[categoria];
+      var actual = porMes[curYm] || 0;
+      if(actual <= 0) return;
+      var mesesAnteriores = Object.keys(porMes).filter(function(ym){ return ym !== curYm; }).sort().slice(-3);
+      if(mesesAnteriores.length === 0) return;
+      var promedio = mesesAnteriores.reduce(function(a,ym){ return a + porMes[ym]; }, 0) / mesesAnteriores.length;
+      if(promedio <= 0) return;
+      var deltaPct = ((actual - promedio) / promedio) * 100;
+      if(Math.abs(deltaPct) < 15) return; // cambios chicos no aportan, se ignoran
+      items.push({ categoria:categoria, deltaPct:deltaPct });
+    });
+
+    if(items.length === 0){ card.style.display = 'none'; return; }
+    items.sort(function(a,b){ return Math.abs(b.deltaPct) - Math.abs(a.deltaPct); });
+    card.style.display = 'block';
+    list.innerHTML = items.slice(0,3).map(function(it){
+      var subiendo = it.deltaPct >= 0;
+      var pillClass = subiendo ? 'up' : 'down';
+      var flecha = subiendo ? '↑' : '↓';
+      return '<div class="list-row"><div class="info"><div class="t1">'+esc(it.categoria)+'</div></div>'+
+        '<span class="delta-pill '+pillClass+'">'+flecha+' '+Math.abs(it.deltaPct).toFixed(0)+'% vs. tu promedio</span></div>';
+    }).join('');
+  }
+
 
   function styleAxis(scale){
     return {
